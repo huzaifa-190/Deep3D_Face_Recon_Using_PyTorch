@@ -16,9 +16,13 @@ import os
 from skimage import transform as trans
 import torch
 import warnings
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
-warnings.filterwarnings("ignore", category=FutureWarning) 
+# warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
+# warnings.filterwarnings("ignore", category=FutureWarning) 
 
+# Remove or replace the deprecated warning filter
+# warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)  # Safer and more compatible
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 # calculating least square problem for image alignment
 def POS(xp, x):
@@ -199,7 +203,10 @@ def align_img(img, lm, lm3D, mask=None, target_size=224., rescale_factor=102.):
 
     # processing the image
     img_new, lm_new, mask_new = resize_n_crop_img(img, lm, t, s, target_size=target_size, mask=mask)
-    trans_params = np.array([w0, h0, s, t[0], t[1]])
+    
+    print("\n\n Values & Shapes ==>",w0, h0, s, t)  # Check the values and shapes
+    t = t.flatten()  # This will flatten the (2,1) array to a (2,) array
+    trans_params = np.array([w0, h0, s, t[0], t[1]])  # Now t[0] and t[1] will be scalars
 
     return trans_params, img_new, lm_new, mask_new
 
